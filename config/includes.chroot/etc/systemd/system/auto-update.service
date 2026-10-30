@@ -1,0 +1,14 @@
+[Unit]
+Description=Remote_OS application updater
+Wants=network-online.target
+After=network-online.target tailscaled.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/auto-update.sh
+User=root
+Nice=10
+IOSchedulingClass=idle
+
+[Install]
+WantedBy=multi-user.target

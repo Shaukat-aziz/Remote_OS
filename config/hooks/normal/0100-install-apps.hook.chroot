@@ -1,0 +1,52 @@
+#!/bin/bash
+set -euo pipefail
+
+export DEBIAN_FRONTEND=noninteractive
+
+if ! id kiosk >/dev/null 2>&1; then
+    useradd --create-home --shell /bin/sh kiosk
+fi
+
+install -d -m 0755 /etc/apt/keyrings
+curl --fail --silent --show-error --location \
+    https://pkgs.tailscale.com/stable/debian/bookworm.noarmor.gpg \
+    --output /etc/apt/keyrings/tailscale-archive-keyring.gpg
+printf '%s\n' \
+    'deb [signed-by=/etc/apt/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/debian bookworm main' \
+    > /etc/apt/sources.list.d/tailscale.list
+
+apt-get update
+apt-get install --no-install-recommends --yes tailscale
+
+rustdesk_url="$(
+    curl --fail --silent --show-error \
+        -H 'Accept: application/vnd.github+json' \
+        -H 'User-Agent: Remote_OS-builder' \
+        https://api.github.com/repos/rustdesk/rustdesk/releases/latest |
+        sed -n 's/.*"browser_download_url": "\(.*\.\(amd64\|x86_64\)\.deb\)".*/\1/p' |
+        head -n 1
+)"
+
+if [ -z "$rustdesk_url" ]; then
+    echo "Could not find an amd64 RustDesk release asset." >&2
+    exit 1
+fi
+
+tmp_deb="$(mktemp --suffix=.deb)"
+trap 'rm -f "$tmp_deb"' EXIT
+curl --fail --silent --show-error --location "$rustdesk_url" --output "$tmp_deb"
+apt-get install --no-install-recommends --yes "$tmp_deb"
+
+systemctl enable tailscaled.service
+systemctl enable NetworkManager.service
+systemctl enable lightdm.service
+systemctl enable auto-update.timer
+systemctl enable kiosk-lockdown.service
+
+install -d -m 0700 -o kiosk -g kiosk /home/kiosk/.config/openbox
+chmod 0755 /usr/local/bin/auto-update.sh
+chmod 0755 /usr/local/libexec/kiosk-session-setup
+chmod 0755 /usr/local/libexec/kiosk-lockdown
+chmod 0755 /home/kiosk/.config/openbox/autostart
+
+rm -rf /var/lib/apt/lists/*

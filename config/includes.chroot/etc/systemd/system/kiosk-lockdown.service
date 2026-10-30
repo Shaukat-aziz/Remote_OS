@@ -1,0 +1,11 @@
+[Unit]
+Description=Apply Remote_OS kiosk lockdown
+After=graphical.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/kiosk-lockdown
+RemainAfterExit=true
+
+[Install]
+WantedBy=graphical.target

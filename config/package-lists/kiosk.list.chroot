@@ -1,0 +1,11 @@
+ca-certificates
+curl
+dbus
+dbus-x11
+lightdm
+network-manager
+openbox
+policykit-1
+x11-xserver-utils
+xserver-xorg
+xserver-xorg-video-all

@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+
+if command -v xset >/dev/null 2>&1; then
+    for display in /tmp/.X11-unix/X*; do
+        [ -S "$display" ] || continue
+        display_number="${display##*X}"
+        DISPLAY=":$display_number" XAUTHORITY=/var/lib/lightdm/.Xauthority \
+            xset s off -dpms s noblank || true
+    done
+fi

@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+
+install -d -m 0700 -o kiosk -g kiosk /home/kiosk
+install -d -m 0700 -o kiosk -g kiosk /home/kiosk/.config

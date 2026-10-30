@@ -1,0 +1,3 @@
+#!/bin/sh
+xset s off -dpms s noblank
+rustdesk >/tmp/rustdesk.log 2>&1 &
