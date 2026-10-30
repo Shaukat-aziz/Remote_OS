@@ -82,6 +82,20 @@ sudo apt update
 sudo apt install -y live-build debootstrap squashfs-tools xorriso grub-pc-bin grub-efi-amd64-bin git curl wget
 ```
 
+### GitHub Codespaces
+
+This repository includes a Codespaces configuration named `Remote_OS`. After
+the repository is pushed to GitHub, open **Code → Codespaces → Create
+codespace on main**. The container installs the Debian Bookworm live-build
+toolchain automatically; build the ISO with:
+
+```bash
+sudo ./build.sh
+```
+
+Codespaces provides a development environment only. The generated ISO must be
+written to USB and tested on physical or virtual hardware separately.
+
 Make the build hook and local scripts executable after copying the project to a
 Linux filesystem:
 
