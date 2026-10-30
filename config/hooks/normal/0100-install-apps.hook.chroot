@@ -23,7 +23,8 @@ rustdesk_url="$(
         -H 'Accept: application/vnd.github+json' \
         -H 'User-Agent: Remote_OS-builder' \
         https://api.github.com/repos/rustdesk/rustdesk/releases/latest |
-        sed -n 's/.*"browser_download_url": "\(.*\.\(amd64\|x86_64\)\.deb\)".*/\1/p' |
+        grep -oE 'https://[^"]+/rustdesk-[^"]+-x86_64\.deb' |
+        grep -v 'unattended-wayland' |
         head -n 1
 )"
 

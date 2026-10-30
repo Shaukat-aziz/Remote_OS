@@ -19,13 +19,14 @@ rustdesk_url="$(
     curl --fail --silent --show-error \
         -H 'Accept: application/vnd.github+json' \
         -H 'User-Agent: Remote_OS-updater' "$RUSTDESK_API" |
-        sed -n 's/.*"browser_download_url": "\(.*\.\(amd64\|x86_64\)\.deb\)".*/\1/p' |
+        grep -oE 'https://[^"]+/rustdesk-[^"]+-x86_64\.deb' |
+        grep -v 'unattended-wayland' |
         head -n 1
 )"
 
 if [ -z "$rustdesk_url" ]; then
     logger -t remote-os-auto-update "RustDesk amd64 release asset was not found"
-    exit 0
+    exit 1
 fi
 
 rustdesk_deb="$DOWNLOAD_DIR/$(basename "$rustdesk_url")"
